@@ -52,9 +52,6 @@ class CustomSIFT:
             descriptors: Numpy array of descriptors (shape: n_keypoints x 128)
         """
         try:
-            if len(image.shape) > 2:
-                image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            
             if mask is not None:
                 image = image.copy()
                 image[mask == 0] = 0
@@ -88,7 +85,7 @@ class CustomSIFT:
                 keypoints_with_response.sort(reverse=True)
                 
                 selected_keypoints = []
-                selected_descriptors = []
+                # selected_descriptors = []
                 indices = []
                 
                 # Keep strongest keypoints while maintaining spatial distribution

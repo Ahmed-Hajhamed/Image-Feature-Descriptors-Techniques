@@ -1,14 +1,9 @@
 import sys
-import time
-import cv2
-import numpy as np
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout, 
-                           QWidget, QPushButton, QFileDialog, QHBoxLayout,
-                           QMessageBox, QFrame, QSizePolicy, QComboBox, QSlider)
-from PyQt5.QtGui import QPixmap, QImage, QFont, QIcon
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget,
+                              QPushButton, QHBoxLayout, QFrame, QSizePolicy, QComboBox,
+                                QSlider)
 from PyQt5.QtCore import Qt
-from matching import matching_ratio_test, match_ncc, match_ssd
-from custom_sift import CustomSIFT
+
 
 
 
