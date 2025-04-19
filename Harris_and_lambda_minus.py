@@ -5,19 +5,13 @@ import matplotlib.pyplot as plt
 import time
 
 
-
-
-
-image_folder = "C:\\Users\\CompuStore\\PycharmProjects\\task3CV\\images"
-image_files = [f for f in os.listdir(image_folder) if f.endswith(('.jpg', '.png', '.jpeg'))]
-
-for file in image_files:
-    print(f"Processing: {file}")
-    image_path = os.path.join(image_folder, file)
-    image = cv2.imread(image_path)
-
+def harris_detector(orignal_image):
     # convert to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = orignal_image.copy()
+    if image.ndim == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image
     gray = np.float32(gray)  #we must convert it to float for better results
 
     # start the time
@@ -66,7 +60,5 @@ for file in image_files:
     image[corners > 0.01 * corners.max()] = [0, 0, 255]
     image[lambda_min > 0.1 * lambda_min.max()] = [0, 255, 0]
 
-    # show the image with feature points
-    plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-    plt.axis('off')
-    plt.show()
+    
+    return image

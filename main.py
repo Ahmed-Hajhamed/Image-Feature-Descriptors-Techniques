@@ -1,3 +1,4 @@
+from cProfile import label
 import sys
 import time
 import cv2
@@ -5,7 +6,7 @@ import numpy as np
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMessageBox
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtCore import Qt
-from matching import matching_ratio_test, match_ncc, match_ssd
+from matching import matching_ratio_test, match_ncc, match_ssd, harris_detector
 from custom_sift import CustomSIFT
 from GUI import SIFTFeatureExtractor
 from custom_sift import CustomSIFT
@@ -27,12 +28,12 @@ class Main(SIFTFeatureExtractor):
         self.sift_toggle.currentIndexChanged.connect(self.toggle_sift_implementation)
         self.sift_toggle.currentIndexChanged.connect(self.toggle_sift_implementation)
 
-        # Connect signals
-        self.load_button1.clicked.connect(lambda: self.load_image(1))
-        self.load_button2.clicked.connect(lambda: self.load_image(2))
+        # Connect signals of SIFT
+        self.load_button1.clicked.connect(lambda: self.load_image(1, detector_type="SIFT"))
+        self.load_button2.clicked.connect(lambda: self.load_image(2, detector_type="SIFT"))
         self.extract_button.clicked.connect(self.extract_features)
         self.match_button.clicked.connect(self.match_features)
-        self.clear_button.clicked.connect(self.clear_display)
+        self.clear_button.clicked.connect(lambda: self.clear_display(detector_type="SIFT"))
 
         # Initialize storage for keypoints and descriptors
         self.image1 = None
@@ -56,31 +57,55 @@ class Main(SIFTFeatureExtractor):
         self.opencv_sift = cv2.SIFT_create()
 
 
+        #Connect signals of Harris
+        self.load_harris_button1.clicked.connect(lambda: self.load_image(1))
+        self.load_harris_button2.clicked.connect(lambda: self.load_image(2))
+        self.load_harris_button3.clicked.connect(lambda: self.load_image(3))
+        self.extract_harris_button.clicked.connect(self.extract_harris_features)
+        self.clear_harris_button.clicked.connect(lambda: self.clear_display())
 
-    def load_image(self, image_num):
+        # Initialize storage for Harris images
+        self.image_harris1 = None
+        self.image_harris2 = None
+        self.image_harris3 = None
+
+
+
+    def load_image(self, image_num, detector_type="Harris"):
         """Load an image from file"""
         file_path, _ = QFileDialog.getOpenFileName(
             self, f"Open Image {image_num}", "", 
             "Image Files (*.png *.jpg *.jpeg *.bmp *.tif)")
-            
         if file_path:
             image = cv2.imread(file_path)
             if image is not None:
                 # Convert to RGB for display
                 rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                
-                if image_num == 1:
-                    self.image1 = image
-                    self.show_image(rgb_image, self.image_label1)
+
+                if detector_type == "Harris":
+                    if image_num == 1:
+                        self.image_harris1 = image
+                        self.show_image(rgb_image, self.image_harris_label1)
+                    elif image_num == 2:
+                        self.image_harris2 = image
+                        self.show_image(rgb_image, self.image_harris_label2)
+                    else:
+                        self.image_harris3 = image
+                        self.show_image(rgb_image, self.image_harris_label3)
+
+                    self.extract_harris_button.setEnabled(True)
+
                 else:
-                    self.image2 = image
-                    self.show_image(rgb_image, self.image_label2)
+                    if image_num == 1:
+                        self.image1 = image
+                        self.show_image(rgb_image, self.image_label1)
+                    else:
+                        self.image2 = image
+                        self.show_image(rgb_image, self.image_label2)
                 
-                # Enable extract button if both images are loaded
-                if self.image1 is not None and self.image2 is not None:
-                    self.extract_button.setEnabled(True)
-                
-                self.status_bar.showMessage(f"Image {image_num} loaded successfully")
+                    # Enable extract button if both images are loaded
+                    if self.image1 is not None and self.image2 is not None:
+                        self.extract_button.setEnabled(True)
             else:
                 QMessageBox.warning(self, "Error", "Failed to load image")
 
@@ -268,6 +293,63 @@ class Main(SIFTFeatureExtractor):
             print(f"General feature extraction error: {str(e)}")
             QMessageBox.warning(self, "Error", f"Feature extraction failed: {str(e)}")
 
+    def extract_harris_features(self):
+        """Extract Harris features from the loaded images"""
+        
+    #     start_time = time.time()
+        for image, label in zip([self.image_harris1, self.image_harris2, self.image_harris3],[self.image_harris_label1, self.image_harris_label2, self.image_harris_label3]):
+            if image is None:
+                continue
+            try:
+                # Harris corner detection
+                harris_response = harris_detector(image)
+                harris_response_rgb = cv2.cvtColor(harris_response, cv2.COLOR_BGR2RGB)
+                self.show_image(harris_response_rgb, label)
+
+            except Exception as e:
+                print(f"Harris feature extraction error: {str(e)}")
+                QMessageBox.warning(self, "Error", f"Harris feature extraction failed: {str(e)}")
+                return
+    #     try:
+    #         # Process image 1
+    #         if self.image1.ndim == 3:
+    #             gray1 = cv2.cvtColor(self.image1, cv2.COLOR_BGR2GRAY)
+    #         else:
+    #             gray1 = self.image1
+            
+    #         # Harris corner detection
+    #         harris_response1 = harris_detector(gray1)
+    #         harris_response_rgb1 = cv2.cvtColor(harris_response1, cv2.COLOR_GRAY2RGB)
+            
+    #         # Process image 2
+    #         gray2 = cv2.cvtColor(self.image2, cv2.COLOR_BGR2GRAY)
+    #         harris_response2 = harris_detector(gray2)
+    #         harris_response_rgb2 = cv2.cvtColor(harris_response2, cv2.COLOR_GRAY2RGB)
+            
+    #         # Process image 3
+    #         gray3 = cv2.cvtColor(self.image3, cv2.COLOR_BGR2GRAY)
+    #         harris_response3 = harris_detector(gray3)
+    #         harris_response_rgb3 = cv2.cvtColor(harris_response3, cv2.COLOR_GRAY2RGB)
+            
+    #         # Display the results
+    #         self.show_image(harris_response_rgb1, self.image_harris_label1)
+    #         self.show_image(harris_response_rgb2, self.image_harris_label2)
+    #         self.show_image(harris_response_rgb3, self.image_harris_label3)
+            
+    #         end_time = time.time()
+    #         computation_time = (end_time - start_time) * 1000
+            
+    #         # Update status
+    #         self.status_bar.showMessage(
+    #             f"Harris features extracted - Image 1: {len(harris_response1)} keypoints, "
+    #             f"Image 2: {len(harris_response2)} keypoints, "
+    #             f"Image 3: {len(harris_response3)} keypoints. "
+    #             f"Time: {computation_time:.2f} ms"
+    #         )
+    #     except Exception as e:
+    #         print(f"Harris feature extraction error: {str(e)}")
+    #         QMessageBox.warning(self, "Error", f"Harris feature extraction failed: {str(e)}")
+
         
     def show_image(self, image, label=None):
         """Display an OpenCV image in the QLabel"""
@@ -306,19 +388,31 @@ class Main(SIFTFeatureExtractor):
             QMessageBox.warning(self, "Error", "Failed to display image")
 
 
-    def clear_display(self):
+    def clear_display(self, detector_type="Harris"):
         """Clear all images and reset state"""
-        self.image_label1.clear()
-        self.image_label2.clear()
-        self.image_label1.setText("Image 1")
-        self.image_label2.setText("Image 2")
-        self.image1 = None
-        self.image2 = None
-        self.descriptors1 = None
-        self.descriptors2 = None
-        self.match_button.setEnabled(False)
-        self.extract_button.setEnabled(False)
-        self.status_bar.clearMessage()
+        if detector_type == "Harris":
+            self.image_harris_label1.clear()
+            self.image_harris_label2.clear()
+            self.image_harris_label3.clear()
+            self.image_harris_label1.setText("Image 1")
+            self.image_harris_label2.setText("Image 2")
+            self.image_harris_label3.setText("Image 3")
+            self.image_harris1 = None
+            self.image_harris2 = None
+            self.image_harris3 = None
+            self.extract_harris_button.setEnabled(False)
+        else:
+            self.image_label1.clear()
+            self.image_label2.clear()
+            self.image_label1.setText("Image 1")
+            self.image_label2.setText("Image 2")
+            self.image1 = None
+            self.image2 = None
+            self.descriptors1 = None
+            self.descriptors2 = None
+            self.match_button.setEnabled(False)
+            self.extract_button.setEnabled(False)
+            self.status_bar.clearMessage()
 
 
     def resizeEvent(self, event):

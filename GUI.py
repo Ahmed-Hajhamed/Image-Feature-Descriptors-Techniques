@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget,
                               QPushButton, QHBoxLayout, QFrame, QSizePolicy, QComboBox,
-                                QSlider)
+                                QSlider, QStackedWidget)
 from PyQt5.QtCore import Qt
 
 
@@ -51,14 +51,154 @@ class SIFTFeatureExtractor(QMainWindow):
         
         # Add minimum size constraint only
         self.setMinimumSize(800, 600)
-        
+
+        #initialize the SIFT UI
+        self.SIFT_ui()
+
+        #initialize the Harris UI
+        self.Harris_ui()
+
+
         # Main widget and layout
-        self.main_widget = QWidget()
-        self.setCentralWidget(self.main_widget)
+        self.stacked_widget = QStackedWidget()
+        self.stacked_widget.addWidget(self.SIFT_widget)
+        self.stacked_widget.addWidget(self.Harris_widget)
+        self.setCentralWidget(self.stacked_widget)
+
+
+    def Harris_ui(self):
+        self.Harris_widget = QWidget()
+        self.Harris_widget.setWindowTitle("Harris Feature Detector")
+        self.harris_layout = QVBoxLayout()
+        self.harris_layout.setSpacing(20)
+        self.harris_layout.setContentsMargins(20, 20, 20, 20)
+        self.Harris_widget.setLayout(self.harris_layout)
+        
+        # Title label
+        self.title_label = QLabel("Harris Feature Detector")
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.title_label.setStyleSheet("""
+            font-size: 24px;
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 20px;
+        """)
+        self.harris_layout.addWidget(self.title_label)
+        
+        # Create image frames for both images
+        self.images_layout = QHBoxLayout()
+        
+        # First image frame
+        self.image_harris_frame1 = QFrame()
+        self.image_harris_frame1.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.image_harris_frame1.setStyleSheet("""
+            QFrame {
+                background-color: #1e1e1e;
+                border: 2px solid #333333;
+                border-radius: 10px;
+                min-height: 400px;
+            }
+        """)
+        self.image_harris_frame_layout1 = QVBoxLayout()
+        self.image_harris_frame_layout1.setContentsMargins(10, 10, 10, 10)
+        self.image_harris_frame1.setLayout(self.image_harris_frame_layout1)
+        self.image_harris_label1 = QLabel("Image 1")
+        self.image_harris_label1.setAlignment(Qt.AlignCenter)
+        self.image_harris_label1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.image_harris_label1.setStyleSheet("border: none; color: #ffffff;")
+        self.image_harris_frame_layout1.addWidget(self.image_harris_label1)
+        
+        # Second image frame
+        self.image_harris_frame2 = QFrame()
+        self.image_harris_frame2.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.image_harris_frame2.setStyleSheet("""
+            QFrame {
+                background-color: #1e1e1e;
+                border: 2px solid #333333;
+                border-radius: 10px;
+                min-height: 400px;
+            }
+        """)
+        self.image_harris_frame_layout2 = QVBoxLayout()
+        self.image_harris_frame_layout2.setContentsMargins(10, 10, 10, 10)
+        self.image_harris_frame2.setLayout(self.image_harris_frame_layout2)
+        self.image_harris_label2 = QLabel("Image 2")
+        self.image_harris_label2.setAlignment(Qt.AlignCenter)
+        self.image_harris_label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.image_harris_label2.setStyleSheet("border: none; color: #ffffff;")
+        self.image_harris_frame_layout2.addWidget(self.image_harris_label2)
+
+        #third image frame
+        self.image_harris_frame3 = QFrame()
+        self.image_harris_frame3.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.image_harris_frame3.setStyleSheet("""
+            QFrame {
+                background-color: #1e1e1e;
+                border: 2px solid #333333;
+                border-radius: 10px;
+                min-height: 400px;
+            }
+        """)
+        self.image_harris_frame_layout3 = QVBoxLayout()
+        self.image_harris_frame_layout3.setContentsMargins(10, 10, 10, 10)
+        self.image_harris_frame3.setLayout(self.image_harris_frame_layout3)
+        self.image_harris_label3 = QLabel("Image 3")
+        self.image_harris_label3.setAlignment(Qt.AlignCenter)
+        self.image_harris_label3.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.image_harris_label3.setStyleSheet("border: none; color: #ffffff;")
+        self.image_harris_frame_layout3.addWidget(self.image_harris_label3)
+
+
+        # Add frames to layout
+        self.images_layout.addWidget(self.image_harris_frame1)
+        self.images_layout.addWidget(self.image_harris_frame2)
+        self.images_layout.addWidget(self.image_harris_frame3)
+        self.harris_layout.addLayout(self.images_layout)
+
+        # Create button and control layout at the bottom
+        self.controls_harris_layout = QVBoxLayout()
+        self.controls_harris_layout.setSpacing(20)
+        self.controls_harris_layout.setContentsMargins(20, 20, 20, 20)
+        self.harris_layout.addLayout(self.controls_harris_layout)
+        
+        # First row of buttons
+        self.button_harris_layout = QHBoxLayout()
+        self.button_harris_layout.setSpacing(15)
+        # Create buttons
+        self.load_harris_button1 = QPushButton("Load Image 1")
+        self.load_harris_button2 = QPushButton("Load Image 2")
+        self.load_harris_button3 = QPushButton("Load Image 3")
+        
+        # Add buttons to layout
+        self.button_harris_layout.addWidget(self.load_harris_button1)
+        self.button_harris_layout.addWidget(self.load_harris_button2)
+        self.button_harris_layout.addWidget(self.load_harris_button3)
+        self.controls_harris_layout.addLayout(self.button_harris_layout)
+        
+        #Second row of buttons
+        self.button_harris_layout2 = QHBoxLayout()
+        self.button_harris_layout2.setSpacing(15)
+        
+        # Create buttons
+        self.extract_harris_button = QPushButton("Extract Features")
+        self.extract_harris_button.setEnabled(False)
+        self.clear_harris_button = QPushButton("Clear All")
+        self.switch_button_to_SIFT = QPushButton("Switch to SIFT Detector")
+        self.switch_button_to_SIFT.clicked.connect(self.open_sift_page)
+
+        # Add buttons to layout
+        self.button_harris_layout2.addWidget(self.extract_harris_button)
+        self.button_harris_layout2.addWidget(self.clear_harris_button)
+        self.button_harris_layout2.addWidget(self.switch_button_to_SIFT)
+        self.controls_harris_layout.addLayout(self.button_harris_layout2)
+
+    def SIFT_ui(self):
+        self.SIFT_widget = QWidget()
+        self.SIFT_widget.setWindowTitle("SIFT Feature Detector")
         self.layout = QVBoxLayout()
         self.layout.setSpacing(20)
         self.layout.setContentsMargins(20, 20, 20, 20)
-        self.main_widget.setLayout(self.layout)
+        self.SIFT_widget.setLayout(self.layout)
         
         # Title label
         self.title_label = QLabel("SIFT Feature Detector")
@@ -133,17 +273,24 @@ class SIFTFeatureExtractor(QMainWindow):
         self.sift_toggle.addItems(["Custom SIFT (High Accuracy)", "OpenCV SIFT"])
         self.sift_toggle.setStyleSheet("""
             QComboBox {
-                background-color: #1e1e1e;
-                color: white;
-                padding: 5px;
-                border: 1px solid #333333;
-                border-radius: 3px;
+            background-color: #1e1e1e;
+            color: white;
+            padding: 5px;
+            border: 1px solid #333333;
+            border-radius: 3px;
+            }
+            QComboBox QAbstractItemView {
+            background-color: #1e1e1e;
+            color: white;
+            selection-background-color: #0d47a1;
+            selection-color: white;
+            border: 1px solid #333333;
             }
             QComboBox::drop-down {
-                border: none;
+            border: none;
             }
             QComboBox::down-arrow {
-                image: none;
+            image: none;
             }
         """)
         
@@ -182,19 +329,28 @@ class SIFTFeatureExtractor(QMainWindow):
         self.matching_method.addItems(["SSD", "NCC"])
         self.matching_method.setStyleSheet("""
             QComboBox {
-                background-color: #1e1e1e;
-                color: white;
-                padding: 5px;
-                border: 1px solid #333333;
-                border-radius: 3px;
+            background-color: #1e1e1e;
+            color: white;
+            padding: 5px;
+            border: 1px solid #333333;
+            border-radius: 3px;
+            }
+            QComboBox QAbstractItemView {
+            background-color: #1e1e1e;
+            color: white;
+            selection-background-color: #0d47a1;
+            selection-color: white;
+            border: 1px solid #333333;
             }
             QComboBox::drop-down {
-                border: none;
+            border: none;
             }
             QComboBox::down-arrow {
-                image: none;
+            image: none;
             }
         """)
+        self.matching_method.setMinimumWidth(70)  # Ensure enough width for the items
+        self.matching_method.setSizeAdjustPolicy(QComboBox.AdjustToContents)  # Adjust width to fit content
 
         # Add number of matches slider
         self.matches_label = QLabel("Number of Matches:")
@@ -235,10 +391,16 @@ class SIFTFeatureExtractor(QMainWindow):
         self.match_button = QPushButton("Match Features")
         self.match_button.setEnabled(False)
 
+        self.switch_button_to_harris = QPushButton("Switch to Harris Detector")
+        self.switch_button_to_harris.clicked.connect(self.open_harris_page)
+
         self.matching_layout.addWidget(self.matching_method_label)
         self.matching_layout.addWidget(self.matching_method)
         self.matching_layout.addWidget(self.match_button)
-        self.matching_layout.addStretch()
+        # self.matching_layout.addStretch()
+        self.matching_layout.addWidget(self.switch_button_to_harris)
+        self.matching_layout.setAlignment(self.switch_button_to_harris, Qt.AlignRight)
+        # self.matching_layout.addStretch()
 
         self.controls_layout.addLayout(self.matching_layout)
 
@@ -249,6 +411,17 @@ class SIFTFeatureExtractor(QMainWindow):
         # Status bar
         self.status_bar = self.statusBar()
         self.status_bar.setStyleSheet("padding: 8px;")
+
+
+    def open_harris_page(self):
+        """"Switch to Harris Detector page"""
+        self.stacked_widget.setCurrentIndex(1)
+    
+    def open_sift_page(self):
+        """Switch to SIFT Detector page"""
+        self.stacked_widget.setCurrentIndex(0)
+
+
 
 
 if __name__ == "__main__":
