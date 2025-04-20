@@ -1,4 +1,3 @@
-from cProfile import label
 import sys
 import time
 import cv2
@@ -122,25 +121,9 @@ class Main(SIFTFeatureExtractor):
             # Match features based on selected method
             method = self.matching_method.currentText()
             
-            # For improved matching, use OpenCV's knnMatch with ratio test
             if method == "SSD":  # SSD (use FLANN matcher for better performance)
-                # FLANN_INDEX_KDTREE = 1
-                # index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
-                # search_params = dict(checks=50)
-                # matcher = cv2.FlannBasedMatcher(index_params, search_params)
-                
-                # # Ensure descriptors are proper type
-                # desc1 = self.descriptors1.astype(np.float32)
-                # desc2 = self.descriptors2.astype(np.float32)
-                
-                # # Find top 2 matches for each descriptor
-                # matches = matcher.knnMatch(desc1, desc2, k=2)
-
                 good_matches = match_ssd(self.descriptors1, self.descriptors2)
-                
-                # Apply ratio test
-                # good_matches = matching_ratio_test(matches)
-                
+            
             else:  # NCC
                 # For NCC, use custom matching implementation
                 good_matches = match_ncc(self.descriptors1, self.descriptors2)
@@ -310,46 +293,6 @@ class Main(SIFTFeatureExtractor):
                 print(f"Harris feature extraction error: {str(e)}")
                 QMessageBox.warning(self, "Error", f"Harris feature extraction failed: {str(e)}")
                 return
-    #     try:
-    #         # Process image 1
-    #         if self.image1.ndim == 3:
-    #             gray1 = cv2.cvtColor(self.image1, cv2.COLOR_BGR2GRAY)
-    #         else:
-    #             gray1 = self.image1
-            
-    #         # Harris corner detection
-    #         harris_response1 = harris_detector(gray1)
-    #         harris_response_rgb1 = cv2.cvtColor(harris_response1, cv2.COLOR_GRAY2RGB)
-            
-    #         # Process image 2
-    #         gray2 = cv2.cvtColor(self.image2, cv2.COLOR_BGR2GRAY)
-    #         harris_response2 = harris_detector(gray2)
-    #         harris_response_rgb2 = cv2.cvtColor(harris_response2, cv2.COLOR_GRAY2RGB)
-            
-    #         # Process image 3
-    #         gray3 = cv2.cvtColor(self.image3, cv2.COLOR_BGR2GRAY)
-    #         harris_response3 = harris_detector(gray3)
-    #         harris_response_rgb3 = cv2.cvtColor(harris_response3, cv2.COLOR_GRAY2RGB)
-            
-    #         # Display the results
-    #         self.show_image(harris_response_rgb1, self.image_harris_label1)
-    #         self.show_image(harris_response_rgb2, self.image_harris_label2)
-    #         self.show_image(harris_response_rgb3, self.image_harris_label3)
-            
-    #         end_time = time.time()
-    #         computation_time = (end_time - start_time) * 1000
-            
-    #         # Update status
-    #         self.status_bar.showMessage(
-    #             f"Harris features extracted - Image 1: {len(harris_response1)} keypoints, "
-    #             f"Image 2: {len(harris_response2)} keypoints, "
-    #             f"Image 3: {len(harris_response3)} keypoints. "
-    #             f"Time: {computation_time:.2f} ms"
-    #         )
-    #     except Exception as e:
-    #         print(f"Harris feature extraction error: {str(e)}")
-    #         QMessageBox.warning(self, "Error", f"Harris feature extraction failed: {str(e)}")
-
         
     def show_image(self, image, label=None):
         """Display an OpenCV image in the QLabel"""
