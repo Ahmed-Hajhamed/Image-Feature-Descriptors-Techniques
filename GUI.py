@@ -160,6 +160,43 @@ class SIFTFeatureExtractor(QMainWindow):
         self.controls_harris_layout.setSpacing(20)
         self.controls_harris_layout.setContentsMargins(20, 20, 20, 20)
         self.harris_layout.addLayout(self.controls_harris_layout)
+
+        # Add toggle for extract the unique features using Harris or lambda_minus
+        self.Feature_extraction_toggle_layout = QHBoxLayout()
+        self.Feature_extraction_toggle_label = QLabel("Extract features using :")
+        self.Feature_extraction_toggle_label.setStyleSheet("color: #ffffff;")
+        
+        self.Feature_extraction_toggle = QComboBox()
+        self.Feature_extraction_toggle.addItems(["Harris", "lambda minus"])
+        self.Feature_extraction_toggle.setStyleSheet("""
+            QComboBox {
+            background-color: #1e1e1e;
+            color: white;
+            padding: 5px;
+            border: 1px solid #333333;
+            border-radius: 3px;
+            }
+            QComboBox QAbstractItemView {
+            background-color: #1e1e1e;
+            color: white;
+            selection-background-color: #0d47a1;
+            selection-color: white;
+            border: 1px solid #333333;
+            }
+            QComboBox::drop-down {
+            border: none;
+            }
+            QComboBox::down-arrow {
+            image: none;
+            }
+        """)
+        
+        self.Feature_extraction_toggle_layout.addWidget(self.Feature_extraction_toggle_label)
+        self.Feature_extraction_toggle_layout.addWidget(self.Feature_extraction_toggle)
+        self.Feature_extraction_toggle_layout.addStretch()
+
+        # Add to the beginning of controls_layout
+        self.controls_harris_layout.insertLayout(0, self.Feature_extraction_toggle_layout)
         
         # First row of buttons
         self.button_harris_layout = QHBoxLayout()

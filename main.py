@@ -285,9 +285,18 @@ class Main(SIFTFeatureExtractor):
                 continue
             try:
                 # Harris corner detection
-                harris_response = harris_detector(image)
-                harris_response_rgb = cv2.cvtColor(harris_response, cv2.COLOR_BGR2RGB)
-                self.show_image(harris_response_rgb, label)
+                # harris_response = harris_detector(image)
+                # harris_response_rgb = cv2.cvtColor(harris_response, cv2.COLOR_BGR2RGB)
+                # self.show_image(harris_response_rgb, label)
+
+                harris_response, lambda_minus = harris_detector(image)
+                if self.Feature_extraction_toggle.currentText() == "Harris":
+                    # Display the Harris response
+                    output_image = cv2.cvtColor(harris_response, cv2.COLOR_BGR2RGB)
+                else:
+                    # Display the lambda minus response
+                    output_image = cv2.cvtColor(lambda_minus, cv2.COLOR_BGR2RGB)
+                self.show_image(output_image, label)
 
             except Exception as e:
                 print(f"Harris feature extraction error: {str(e)}")

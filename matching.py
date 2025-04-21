@@ -55,11 +55,16 @@ def harris_detector(image_orignal):
     # lambda_min = cv2.dilate(lambda_min, None)
 
     # threshold and highlight the corners with red dots and lambda_min with green dots
-    image[corners > 0.01 * corners.max()] = [0, 0, 255]
-    image[lambda_min > 0.1 * lambda_min.max()] = [0, 255, 0]
+    # image[corners > 0.01 * corners.max()] = [0, 0, 255]
+    # image[lambda_min > 0.1 * lambda_min.max()] = [0, 255, 0]
+    harris_image = image.copy()
+    lambda_min_image = image.copy()
+    
+    harris_image[corners > 0.01 * corners.max()] = [0, 0, 255]
+    lambda_min_image[lambda_min > 0.1 * lambda_min.max()] = [0, 255, 0]
 
     
-    return image
+    return harris_image, lambda_min_image
 
 
 
@@ -84,7 +89,7 @@ def matching_ratio_test(matches, ratio=0.8):
 
 
 
-def match_ncc(self, desc1, desc2):
+def match_ncc( desc1, desc2):
         """Match features using Normalized Cross Correlation with optimization"""
         if desc1 is None or desc2 is None or len(desc1) == 0 or len(desc2) == 0:
             return []
