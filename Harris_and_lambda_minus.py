@@ -54,7 +54,7 @@ def harris_detector(orignal_image):
 
     # for better visualization
     corners = cv2.dilate(corners, None)
-    # lambda_min = cv2.dilate(lambda_min, None)
+    lambda_min = cv2.dilate(lambda_min, None)
 
     # threshold and highlight the corners with red dots and lambda_min with green dots
     image[corners > 0.01 * corners.max()] = [0, 0, 255]
