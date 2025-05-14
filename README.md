@@ -66,18 +66,3 @@ This project is licensed under the MIT License.
 * [Zeyad Wail Alshakhy](https://github.com/zeyad-wail)
 * [Mohamed Ahmed](https://github.com/MohamadAhmedAli)
 * [Ahmed Etman](https://github.com/AhmedEtma)
-
----
-
-## 🙌 Acknowledgments
-
-Special thanks to the Computer Vision community and open-source contributors.
-
-```
-
----
-
-Feel free to customize this `README.md` further to suit your project's needs. Let me know if you'd like assistance with any specific sections or additional features!
-::contentReference[oaicite:0]{index=0}
- 
-```
